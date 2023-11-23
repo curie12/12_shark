@@ -12,7 +12,7 @@
 #define N_COINPOS       12
 #define MAX_COIN        4
 
-#define SHARK_INITPOS   -4//게임 난이도 조절
+#define SHARK_INITPOS   -2//게임 난이도 조절
 #define MAX_SHARKSTEP   6 
 
     

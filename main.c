@@ -69,6 +69,53 @@ void checkDie(void)
             player_status[i] = PLAYERSTATUS_DIE;
      }     
 }
+int game_end(void)
+{
+    int i;
+    int flag_end = 1;
+    
+    //if all the players are died?
+    for (i=0;i<N_PLAYER;i++)
+    {
+        if ((player_status[i] == PLAYERSTATUS_LIVE) && (player_position[i] <= N_BOARD-1))
+        //(player_status[i] == PLAYERSTATUS_LIVE)
+        {
+            flag_end = 0;
+            break;
+        } 
+    }
+    return flag_end; 
+}
+int getAlivePlayer(void)
+{
+    int i;
+    int cnt = 0;
+    for (i=0;i<N_PLAYER;i++)
+    {
+        if (player_status[i] == PLAYERSTATUS_END)
+           cnt++;
+    }
+    return cnt;
+}
+int getWinner(void)
+{
+    int i;
+    int winner = 0;
+    int max_coin = -1;
+    
+    for (i=0;i<N_PLAYER;i++)
+    {
+        if (player_status[i] != PLAYERSTATUS_DIE)
+        {
+           if(player_coin[i] > max_coin)
+           {
+               max_coin = player_coin[i];
+               winner = i;
+           }
+        }
+    }
+    return winner;
+}
 /*void closing(void)
 {
      printf("===================================================================\n");
@@ -139,23 +186,33 @@ int main(int argc, char *argv[])
        //2-4. 동전 줍기 
        coinResult = board_getBoardCoin(player_position[turn]);//
        player_coin[turn] += coinResult;
-       //printf()
+       if ( coinResult > 0)
+          printf("  -> Lucky! %s got %i coins!\n", player_name[turn], coinResult);
        
        
        //2-5. 다음턴
        turn = (turn + 1) % N_PLAYER; //wrap around.
        
        //2-6. if(조건: 모든 플레이어가 한번씩 턴을 돌음.)
+       
+       
        if (turn == 0)
        {
               //상어 동작
               int shark_pos = board_stepShark();
-              //printf()
+              printf("The shark breaks through %i steps of ice.\n", shark_pos);
               checkDie();//살았냐 죽었냐를 판단 
        } 
-  } while(1);
-       //3. 정리(승자 계산, 출력 등) 
-        
+  } while( game_end() == 0 );//game에 살아있는 사람이없으면 1 반환
+    
+  //3. 정리(승자 계산, 출력 등) 
+  printf("!!GAME END!!\n");
+  
+  if(getAlivePlayer() <= 1)
+       printf("%i player is alive! Winner is %s\n", getAlivePlayer(), player_name[ getWinner() ]);
+  else
+       printf("%i players are alive! Winner is %s\n", getAlivePlayer() , player_name[ getWinner() ]);
+       
   system("PAUSE");	
   return 0;
 }
